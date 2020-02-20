@@ -2,12 +2,16 @@ package com.gildedrose
 
 class GildedRose(var items: Array<Item>) {
     fun updateQuality() {
-        items.forEach(Item::decreaseSellDate)
+        items.forEach {
+            with(it) {
+                if(!isSulfuras()) {
+                    age()
+                }
+            }
+        }
     }
-}
 
-private fun Item.decreaseSellDate() {
-    if (!isSulfuras()) {
+    private fun Item.age() {
         sellIn -= 1
         when {
             isAgedBrie() -> when {
@@ -34,37 +38,37 @@ private fun Item.decreaseSellDate() {
             }
         }
     }
-}
 
-private fun Item.decreaseQualityBy(amount: Int) {
-    (1..amount).forEach { i ->
-        if (hasQualityLeft()) quality = quality - 1
+    private fun Item.decreaseQualityBy(amount: Int) {
+        (1..amount).forEach { i ->
+            if (hasQualityLeft()) quality = quality - 1
+        }
     }
-}
 
-private fun Item.increaseQualityBy(amount: Int) {
-    (1..amount).forEach { i ->
-        if (!hasReachedMaximumQuality()) quality += 1
+    private fun Item.increaseQualityBy(amount: Int) {
+        (1..amount).forEach { i ->
+            if (!hasReachedMaximumQuality()) quality += 1
+        }
     }
+
+    private fun Item.considerPieceOfCrap() {
+        decreaseQualityBy(quality)
+    }
+
+    private fun Item.isToBeSoldInLessThan(days: Int) = sellIn < days
+
+    private fun Item.isPastSellingDate() = sellIn < 0
+
+    private fun Item.hasQualityLeft() = quality > 0
+
+    private fun Item.hasReachedMaximumQuality() = quality >= 50
+
+    private fun Item.isSulfuras() = name == "Sulfuras, Hand of Ragnaros"
+
+    private fun Item.isConjured() = name == "Conjured Mana Cake"
+
+    private fun Item.isBackstagePass() = name == "Backstage passes to a TAFKAL80ETC concert"
+
+    private fun Item.isAgedBrie() = name == "Aged Brie"
 }
-
-private fun Item.considerPieceOfCrap() {
-    decreaseQualityBy(quality)
-}
-
-private fun Item.isToBeSoldInLessThan(days: Int) = sellIn < days
-
-private fun Item.isPastSellingDate() = sellIn < 0
-
-private fun Item.hasQualityLeft() = quality > 0
-
-private fun Item.hasReachedMaximumQuality() = quality >= 50
-
-private fun Item.isSulfuras() = name == "Sulfuras, Hand of Ragnaros"
-
-private fun Item.isConjured() = name == "Conjured Mana Cake"
-
-private fun Item.isBackstagePass() = name == "Backstage passes to a TAFKAL80ETC concert"
-
-private fun Item.isAgedBrie() = name == "Aged Brie"
 

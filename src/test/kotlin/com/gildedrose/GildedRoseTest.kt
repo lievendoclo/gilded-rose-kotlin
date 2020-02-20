@@ -49,16 +49,28 @@ class GildedRoseTest {
     }
 
     @Test fun `Backstage passes increase in quality`() {
-        val items = arrayOf<Item>(Item("Backstage passes to a TAFKAL80ETC concert", 8, 20))
+        val items = arrayOf<Item>(Item("Backstage passes to a TAFKAL80ETC concert", 12, 20))
         val app = GildedRose(items)
         app.updateQuality()
-        assertEquals(22, app.items[0].quality)
-        assertEquals(7, app.items[0].sellIn)
+        assertEquals(21, app.items[0].quality)
+        assertEquals(11, app.items[0].sellIn)
         app.updateQuality()
-        assertEquals(24, app.items[0].quality)
-        assertEquals(6, app.items[0].sellIn)
+        assertEquals(23, app.items[0].quality)
+        assertEquals(10, app.items[0].sellIn)
+        app.updateQuality()
+        assertEquals(25, app.items[0].quality)
+        assertEquals(9, app.items[0].sellIn)
         app.updateQuality()
         assertEquals(27, app.items[0].quality)
+        assertEquals(8, app.items[0].sellIn)
+        app.updateQuality()
+        assertEquals(29, app.items[0].quality)
+        assertEquals(7, app.items[0].sellIn)
+        app.updateQuality()
+        assertEquals(31, app.items[0].quality)
+        assertEquals(6, app.items[0].sellIn)
+        app.updateQuality()
+        assertEquals(34, app.items[0].quality)
         assertEquals(5, app.items[0].sellIn)
     }
 
@@ -98,6 +110,12 @@ class GildedRoseTest {
         app.updateQuality()
         assertEquals(2, app.items[0].quality)
         assertEquals(-1, app.items[0].sellIn)
+        app.updateQuality()
+        assertEquals(0, app.items[0].quality)
+        assertEquals(-2, app.items[0].sellIn)
+        app.updateQuality()
+        assertEquals(0, app.items[0].quality)
+        assertEquals(-3, app.items[0].sellIn)
     }
 
 
