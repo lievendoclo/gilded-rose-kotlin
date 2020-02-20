@@ -19,7 +19,7 @@ class GildedRose(var items: Array<Item>) {
                 else -> increaseQualityBy(1)
             }
             isBackstagePass() -> when {
-                isPastSellingDate() -> considerPieceOfCrap()
+                isPastSellingDate() -> considerAsAPieceOfCrap()
                 else -> {
                     when {
                         isToBeSoldInLessThan(6) -> increaseQualityBy(3)
@@ -40,19 +40,19 @@ class GildedRose(var items: Array<Item>) {
     }
 
     private fun Item.decreaseQualityBy(amount: Int) {
-        (1..amount).forEach { i ->
-            if (hasQualityLeft()) quality = quality - 1
+        (1..amount).forEach { _ ->
+            if (hasQualityLeft()) quality -= 1
         }
     }
 
     private fun Item.increaseQualityBy(amount: Int) {
-        (1..amount).forEach { i ->
+        (1..amount).forEach { _ ->
             if (!hasReachedMaximumQuality()) quality += 1
         }
     }
 
-    private fun Item.considerPieceOfCrap() {
-        decreaseQualityBy(quality)
+    private fun Item.considerAsAPieceOfCrap() {
+        quality = 0
     }
 
     private fun Item.isToBeSoldInLessThan(days: Int) = sellIn < days
