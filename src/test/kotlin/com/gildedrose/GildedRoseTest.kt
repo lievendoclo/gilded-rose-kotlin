@@ -23,7 +23,7 @@ class GildedRoseTest {
     }
 
     @Test fun `Quality can never be negative`() {
-        val items = arrayOf<Item>(Item("old", 0, 0))
+        val items = arrayOf<Item>(Item("old", 0, 1))
         val app = GildedRose(items)
         app.updateQuality()
         assertEquals(0, app.items[0].quality)
@@ -49,11 +49,31 @@ class GildedRoseTest {
     }
 
     @Test fun `Backstage passes increase in quality`() {
-        val items = arrayOf<Item>(Item("Backstage passes to a TAFKAL80ETC concert", 9, 20))
+        val items = arrayOf<Item>(Item("Backstage passes to a TAFKAL80ETC concert", 8, 20))
         val app = GildedRose(items)
         app.updateQuality()
         assertEquals(22, app.items[0].quality)
-        assertEquals(8, app.items[0].sellIn)
+        assertEquals(7, app.items[0].sellIn)
+        app.updateQuality()
+        assertEquals(24, app.items[0].quality)
+        assertEquals(6, app.items[0].sellIn)
+        app.updateQuality()
+        assertEquals(27, app.items[0].quality)
+        assertEquals(5, app.items[0].sellIn)
+    }
+
+    @Test fun `Backstage passes become worthless if they expire`() {
+        val items = arrayOf<Item>(Item("Backstage passes to a TAFKAL80ETC concert", 2, 20))
+        val app = GildedRose(items)
+        app.updateQuality()
+        assertEquals(23, app.items[0].quality)
+        assertEquals(1, app.items[0].sellIn)
+        app.updateQuality()
+        assertEquals(26, app.items[0].quality)
+        assertEquals(0, app.items[0].sellIn)
+        app.updateQuality()
+        assertEquals(0, app.items[0].quality)
+        assertEquals(-1, app.items[0].sellIn)
     }
 
     @Test fun `Sulfuras never decreases in quality`() {
@@ -65,9 +85,6 @@ class GildedRoseTest {
         assertEquals(80, app.items[1].quality)
         assertEquals(0, app.items[1].sellIn)
     }
-
-
-
 }
 
 
