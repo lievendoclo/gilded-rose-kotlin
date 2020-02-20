@@ -2,11 +2,9 @@ package com.gildedrose
 
 class GildedRose(var items: Array<Item>) {
     fun updateQuality() {
-        items.forEach {
-            with(it) {
-                if(!isSulfuras()) {
-                    age()
-                }
+        items.forEach {item ->
+            when {
+                !item.isSulfuras() -> item.age()
             }
         }
     }
