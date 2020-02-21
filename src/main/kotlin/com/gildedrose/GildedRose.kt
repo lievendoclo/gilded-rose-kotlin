@@ -2,71 +2,99 @@ package com.gildedrose
 
 class GildedRose(var items: Array<Item>) {
     fun updateQuality() {
-        items.forEach {item ->
-            when {
-                !item.isSulfuras() -> item.age()
-            }
-        }
+        items.forEach {it.asAgingItem().age() }
+    }
+}
+
+sealed class AgingItem(private val item: Item) {
+    fun Item.decreaseSellDate() = sellIn--
+
+    fun age() {
+        item.decreaseSellDate()
+        item.age()
     }
 
-    private fun Item.age() {
-        sellIn -= 1
+    open fun Item.age() {}
+}
+
+class Sulfuras(item: Item): AgingItem(item) {
+}
+
+class AgedBrie(item: Item): AgingItem(item) {
+    override fun Item.age() {
         when {
-            isAgedBrie() -> when {
-                isPastSellingDate() -> increaseQualityBy(2)
-                else -> increaseQualityBy(1)
-            }
-            isBackstagePass() -> when {
-                isPastSellingDate() -> considerAsAPieceOfCrap()
-                else -> {
-                    when {
-                        isToBeSoldInLessThan(6) -> increaseQualityBy(3)
-                        isToBeSoldInLessThan(11) -> increaseQualityBy(2)
-                        else -> increaseQualityBy(1)
-                    }
-                }
-            }
-            isConjured() -> when {
-                isPastSellingDate() -> decreaseQualityBy(4)
-                else -> decreaseQualityBy(2)
-            }
-            else -> when {
-                isPastSellingDate() -> decreaseQualityBy(2)
-                else -> decreaseQualityBy(1)
-            }
+            isPastSellingDate() -> increaseQualityBy(2)
+            else -> increaseQualityBy(1)
         }
     }
+}
 
-    private fun Item.decreaseQualityBy(amount: Int) {
-        (1..amount).forEach { _ ->
-            if (hasQualityLeft()) quality -= 1
-        }
-    }
-
-    private fun Item.increaseQualityBy(amount: Int) {
-        (1..amount).forEach { _ ->
-            if (!hasReachedMaximumQuality()) quality += 1
-        }
-    }
-
-    private fun Item.considerAsAPieceOfCrap() {
+class BackstagePass(item: Item): AgingItem(item) {
+    fun Item.isToBeSoldInLessThan(days: Int) = sellIn < days
+    fun Item.removeAllQuality() {
         quality = 0
     }
 
-    private fun Item.isToBeSoldInLessThan(days: Int) = sellIn < days
-
-    private fun Item.isPastSellingDate() = sellIn < 0
-
-    private fun Item.hasQualityLeft() = quality > 0
-
-    private fun Item.hasReachedMaximumQuality() = quality >= 50
-
-    private fun Item.isSulfuras() = name == "Sulfuras, Hand of Ragnaros"
-
-    private fun Item.isConjured() = name == "Conjured Mana Cake"
-
-    private fun Item.isBackstagePass() = name == "Backstage passes to a TAFKAL80ETC concert"
-
-    private fun Item.isAgedBrie() = name == "Aged Brie"
+    override fun Item.age() {
+        when {
+            isPastSellingDate() -> removeAllQuality()
+            else -> {
+                when {
+                    isToBeSoldInLessThan(6) -> increaseQualityBy(3)
+                    isToBeSoldInLessThan(11) -> increaseQualityBy(2)
+                    else -> increaseQualityBy(1)
+                }
+            }
+        }
+    }
 }
 
+class Conjured(item: Item): AgingItem(item) {
+    override fun Item.age() {
+        when {
+            isPastSellingDate() -> decreaseQualityBy(4)
+            else -> decreaseQualityBy(2)
+        }
+    }
+}
+
+class NormalItem(item: Item): AgingItem(item) {
+    override fun Item.age() {
+        when {
+            isPastSellingDate() -> decreaseQualityBy(2)
+            else -> decreaseQualityBy(1)
+        }
+    }
+}
+
+fun Item.asAgingItem(): AgingItem {
+    fun Item.isSulfuras() = name == "Sulfuras, Hand of Ragnaros"
+    fun Item.isConjured() = name == "Conjured Mana Cake"
+    fun Item.isBackstagePass() = name == "Backstage passes to a TAFKAL80ETC concert"
+    fun Item.isAgedBrie() = name == "Aged Brie"
+
+    return when {
+        isSulfuras() -> Sulfuras(this)
+        isAgedBrie() -> AgedBrie(this)
+        isBackstagePass() -> BackstagePass(this)
+        isConjured() -> Conjured(this)
+        else -> NormalItem(this)
+    }
+}
+
+fun Item.decreaseQualityBy(amount: Int) {
+    fun Item.hasQualityLeft() = quality > 0
+
+    (1..amount).forEach { _ ->
+        if (hasQualityLeft()) quality--
+    }
+}
+fun Item.increaseQualityBy(amount: Int) {
+    fun Item.hasReachedMaximumQuality() = quality >= 50
+
+    (1..amount).forEach { _ ->
+        if (!hasReachedMaximumQuality()) quality++
+    }
+}
+
+fun Item.isPastSellingDate() = sellIn < 0
