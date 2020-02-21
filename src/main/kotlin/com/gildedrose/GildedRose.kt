@@ -9,7 +9,7 @@ class GildedRose(var items: Array<Item>) {
 sealed class AgingItem(private val item: Item) {
     fun Item.decreaseSellDate() = sellIn--
 
-    fun age() {
+    open fun age() {
         item.decreaseSellDate()
         item.age()
     }
@@ -18,6 +18,9 @@ sealed class AgingItem(private val item: Item) {
 }
 
 class Sulfuras(item: Item): AgingItem(item) {
+    override fun age() {
+        // Sulfuras doesn't age!
+    }
 }
 
 class AgedBrie(item: Item): AgingItem(item) {
